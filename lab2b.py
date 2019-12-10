@@ -1,7 +1,21 @@
+import random
+
 open_list = ["[", "{", "("]
 close_list = ["]", "}", ")"]
 
 # Function to check parentheses
+
+
+def generate():
+    n = random.randint(2,20)
+    patt = ""
+    for i in range(n):
+        x = random.random()
+        if(x > 0.5):
+            patt+="["
+        else:
+            patt+="]"
+    return patt
 
 
 def check(myStr):
@@ -21,8 +35,8 @@ def check(myStr):
 
 
 # Driver code
-string = "{[]{()}}"
+string = generate()
 print(string, "-", check(string))
 
-string = "[{}{})(]"
+string = generate()
 print(string, "-", check(string))
