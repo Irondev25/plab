@@ -1,0 +1,321 @@
+Q5b
+# import os
+
+# def getch():
+#     os.system("bash -c \"read -n 1\"")
+
+# getch()
+
+
+class _Getch:
+    """Gets a single character from standard input.  Does not echo to the
+screen."""
+
+    def __init__(self):
+        try:
+            self.impl = _GetchWindows()
+        except ImportError:
+            self.impl = _GetchUnix()
+
+    def __call__(self): return self.impl()
+
+
+class _GetchUnix:
+    def __init__(self):
+        import tty
+        import sys
+
+    def __call__(self):
+        import sys
+        import tty
+        import termios
+        fd = sys.stdin.fileno()
+        old_settings = termios.tcgetattr(fd)
+        try:
+            tty.setraw(sys.stdin.fileno())
+            ch = sys.stdin.read(1)
+            print(ch)
+        finally:
+            termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+        return ch
+
+
+class _GetchWindows:
+    def __init__(self):
+        import msvcrt
+
+    def __call__(self):
+        import msvcrt
+        return msvcrt.getch()
+
+
+getch = _GetchUnix()
+print(getch.__call__())
+
+
+
+Q6a
+def eval():
+    x = int(input('Enter value of x'))
+    if(x == 3 or x == -3):
+        raise Exception("Invalid value of x")
+    else:
+        ans = 1.0/(9-pow(x, 2))
+        print(ans)
+
+try:
+    eval()
+except Exception as e:
+    print("invalid input")
+
+
+Q6b
+import re
+import os
+
+pat = r".*\.mp3"
+path = "/home/irondev25"
+
+for r, d, f in os.walk(path):
+    for file in f:
+        if(re.search(pat, str(file)) is not None):
+            print(file)
+
+
+Q7a
+def bonAppetit(bill, k, b):
+    count = 0
+    for i in range(len(bill)):
+        if(i != k):
+            count += int(bill[i])
+    pay = count//2
+    if(pay != b):
+        print(b-pay)
+    else:
+        print("Bon Appetit")
+
+
+n = input("Enter number of Items")
+k = input("Enter item of allergy")
+bill = list()
+for i in range(n):
+    bill.append(input())
+b = int(input("Enter bill"))
+bonAppetit(bill, int(k), b)
+
+
+Q7b
+import sys
+
+args = {}
+cmd_args = sys.argv
+
+for i in range(1,len(sys.argv),2):
+    args[cmd_args[i]]=cmd_args[i+1]
+
+for key in args.keys():
+    print(key+" "+args[key])
+
+
+Q8a
+class Television(object):
+        """A virtual television simulation"""
+
+        def __init__(self):
+                print("The television is off.")
+
+        def power_button(self, power="off"):
+                if power == "off":
+                        power = "on"
+                        print("The power is now on.")
+                else:
+                        power = "off"
+                        print("The power is now off.")
+
+        def volume_button(self, volume=0):
+                up_or_down = input(
+                    "Do you want to increase or decrease the volume? (up/down): ")
+                if up_or_down == "up":
+                        amount = int(input("By how much? (Enter a number): "))
+                        volume += amount
+                        if volume > 10:
+                                volume = 10
+                        print("The volume is now", volume)
+                elif up_or_down == "down":
+                        amount = int(input("By how much? (Enter a number): "))
+                        volume += amount
+                        if volume < 0:
+                                volume = 0
+                        print("The volume is now", volume)
+                else:
+                        print("That is not a valid choice.")
+
+        def channel_button(self, channel=1):
+                new_channel = int(
+                    input("What channel do you want to watch? (Enter a number between 1 and 10.): "))
+                if new_channel < 1 or new_channel > 10:
+                        print("That is not a valid channel!")
+                else:
+                        channel = new_channel
+                        print("The channel is now", channel)
+
+#create the main part of the program, the television simulation
+
+
+def main():
+        tv = Television()
+
+        choice = None
+        while choice != "0":
+                print("""
+                Television simulation
+	
+                0 - Quit
+                1 - Turn the television on or off
+                2 - Change the volume
+                3 - Change the channel
+                """)
+
+                choice = input("Choice: ")
+                print(choice)
+
+                #exit
+                if choice == "0":
+                        print("Good-bye.")
+
+                #turn the television on or off
+                elif choice == "1":
+                        tv.power_button()
+
+                #increase or decrease the volume
+                elif choice == "2":
+                        tv.volume_button()
+
+                #change the channel
+                elif choice == "3":
+                        tv.channel_button()
+
+                else:
+                        print("\nInvalid choice!")
+
+
+main()
+("\n\nPress the enter key to exit.")
+
+
+Q8b
+punctuations = '''!()-[]{};:'"\,<>./?@#$%^&*_~'''
+my_str = "Hello!!!, he said ---and went."
+no_punct = ""
+for char in my_str:
+   if char not in punctuations:
+       no_punct = no_punct + char
+print(no_punct)
+
+
+Q9a
+import sqlite3
+import os
+
+if(os.path.exists("test.db")):
+    os.system("rm test.db")
+
+connection = sqlite3.connect("test.db")
+cursor = connection.cursor()
+
+def createStudentDatabase():
+    statement = """
+    create table student(
+    usn varchar(10) primary key,
+    name varchar(50),
+    age integer,
+    address varchar(100))"""
+    cursor.execute(statement)
+    connection.commit()
+
+def insertStudentValues():
+    students = (
+        ('1BM17IS063','Rahul Bhaskar',20,'Ashoknagar'),
+        ('1BM17ISxxx','xxxxx',20,'xxxx')
+    )
+    for student in students:
+        cursor.execute("insert into student(usn,name,age,address) values(?,?,?,?)",student)
+        connection.commit()
+
+def printAllStudent():
+    statement = "select * from student"
+    cursor.execute(statement)
+    students = cursor.fetchall()
+    for student in students:
+        print(student)
+
+createStudentDatabase()
+insertStudentValues()
+printAllStudent()
+
+Q9b
+import re
+import os
+
+pat = r".*\.py"
+path = "/home/irondev25/Desktop/python"
+
+for r,d,f in os.walk("."):
+    for file in f:
+        if(re.search(pat,str(file)) is not None):
+            print(file)
+
+
+Q10a
+import os,time
+
+def child():
+    for i in range(5):
+        time.sleep(1)
+        print(str(os.getpid())+" ->"+str(i+1))
+    exit(0)
+
+for i in range(5):
+    n = os.fork()
+    if(n>0):
+        print("process("+str(n)+") spawned")
+    else:
+        child()
+
+Q10b
+i = 1
+
+try:
+    while(1):
+        print(i)
+        i += 1
+        if(i >= 20):
+            raise StopIteration()
+except StopIteration as e:
+    print("caught exception")
+
+
+Q11a
+import os
+
+def walk_dir(path):
+    for root,dirs,files in os.walk(path):
+        print("files: ")
+        for file in files:
+            print(file)
+        print("\nDirectory")
+        for f in dirs:
+            print(f)
+
+walk_dir(".")
+
+
+Q11b
+import re
+
+strings = re.findall(r"\d+\w*","This is a sample, 236dfg 56sdf isuhdngi")
+
+for match in strings:
+    print(match)
+
+
